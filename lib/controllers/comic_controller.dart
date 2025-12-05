@@ -31,6 +31,13 @@ class ComicController extends GetxController {
     comics.assignAll(allComics);
   }
 
+  Future<void> updateCurrentPage(Comic comic, int page) async {
+    comic.currentPage = page;
+    await DatabaseHelper().updateComicCurrentPage(comic.id!, page);
+    comics.refresh(); // refresh reactive list
+  }
+
+  
  
   void _applyFilters() {
     List<Comic> temp = List.from(comics);
@@ -89,8 +96,7 @@ Future<void> importComic() async {
       return;
     }
 
-    // 2. The rest of your logic remains the same!
-    
+     
     // Check file size (e.g., limit to 500MB)
     final fileSize = await File(filePath).length();
     if (fileSize > 5000 * 1024 * 1024) {

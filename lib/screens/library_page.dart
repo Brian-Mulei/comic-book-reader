@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:comic_book_reader/screens/cbz_reader_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/comic_controller.dart';
@@ -80,7 +81,12 @@ class LibraryPage extends StatelessWidget {
               final comic = comics[index];
               return GestureDetector(
                 onTap: () {
-                  // TODO: Navigate to reader
+                     Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => CBZReaderPage(comic: comic),
+    ),
+  );
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

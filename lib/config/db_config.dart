@@ -57,6 +57,17 @@ class DatabaseHelper {
     return maps.map((map) => Comic.fromMap(map)).toList();
   }
 
+  Future<void> updateComicCurrentPage(int id, int page) async {
+  final dbClient = await db;
+  await dbClient.update(
+    'comics',
+    {'currentPage': page},
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
+
+
   // Delete a comic by id
   Future<int> deleteComic(int id) async {
     final dbClient = await db;
