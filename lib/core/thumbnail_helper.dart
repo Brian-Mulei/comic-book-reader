@@ -10,7 +10,9 @@ Future<String?> generateThumbnail(String filePath, String format) async {
   switch (format.toLowerCase()) {
     case 'cbz':
       return await _generateCbzThumbnail(filePath);
-    // case 'pdf':
+    case 'cbr':
+      return await _thumbnailFromZip(filePath);
+     // case 'pdf':
     //   return await _generatePdfThumbnail(filePath);
     case 'folder':
       return await _generateFolderThumbnail(filePath);
@@ -18,6 +20,30 @@ Future<String?> generateThumbnail(String filePath, String format) async {
       return null; // For CBR or EPUB, can add later
   }
 }
+
+    Future<String?> _thumbnailFromZip(String path) async {
+    final input = InputFileStream(path);
+    final archive = ZipDecoder().decodeBuffer(input);
+
+    // Find first image
+    final imgFile = archive.files.firstWhere(
+      (f) => f.name.toLowerCase().endsWith('.jpg') ||
+             f.name.toLowerCase().endsWith('.jpeg') ||
+             f.name.toLowerCase().endsWith('.png'),
+      orElse: () => throw Exception("No images in comic."),
+    );
+
+    final bytes = imgFile.content ;
+    final decoded = img.decodeImage(bytes);
+    if (decoded == null) return null;
+
+    final thumb = img.copyResize(decoded, width: 300);
+
+    final thumbPath = p.setExtension(path, '.thumb.jpg');
+    File(thumbPath).writeAsBytesSync(img.encodeJpg(thumb));
+
+    return thumbPath;
+  }
 
 /// ----- CBZ -----
 Future<String?> _generateCbzThumbnail(String cbzPath) async {
@@ -47,6 +73,8 @@ Future<String?> _generateCbzThumbnail(String cbzPath) async {
     return null;
   }
 }
+
+
 
 /// ----- PDF -----
 /// 
